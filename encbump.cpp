@@ -1,6 +1,7 @@
 /*
  *  board_test.cpp
  *  Created by Hawkeye 9/29/2010
+ *  Updated by Kun Su 4/2018
  *
  * I implement some i/o operations with the BRL USB I/O board.
  *
@@ -143,7 +144,7 @@ int main(int argc, char* argv[])
     bumptimer, timer2,tnow;
   struct sched_param param;   // priority settings
   int interval= 1 * MS;    // task period in nanoseconds
-  //int setpoint = 0;
+  
   int ret;
   
   signal( SIGINT,&sigTrap);                // catch ^C for graceful close.
@@ -196,6 +197,7 @@ int main(int argc, char* argv[])
   }
 
   printf("Opened boards.\n\n\n Press Initialize button to bump encoders. \n\n\n");
+  //brief initialize data retrieval from a USB board
   if(ioctl(fps[0],BRL_RESET_BOARD)!=0){
 	perror("ioctl error openin board");
 	errno=0;
@@ -248,6 +250,7 @@ int main(int argc, char* argv[])
 
   while ( runable )
     {
+      //initiate read
       ret = ioctl(fps[0],BRL_START_READ,USB_MAX_IN_LEN);
       if(ret<0){
     	  printf("can't initiate read 0");
@@ -316,7 +319,6 @@ int main(int argc, char* argv[])
 	      // select next arm
 	      if (clockdiff > bump_period || isbumped == bumptrue)
 		{
-	    	  printf("i am here\n");
 		  clock_gettime(CLOCK_REALTIME,&bumptimer);
 		  bump_output = DAC_OFFSET;
 		  joint++;
